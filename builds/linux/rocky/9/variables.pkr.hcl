@@ -381,6 +381,12 @@ variable "build_key" {
   sensitive   = true
 }
 
+variable "build_hostname" {
+  type        = string
+  description = "The hostname for the guest operating system."
+  default     = "localhost"
+}
+
 variable "communicator_proxy_host" {
   type        = string
   description = "The proxy server to use for SSH connection. (Optional)"

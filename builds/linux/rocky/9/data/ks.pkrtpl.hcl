@@ -27,6 +27,9 @@ keyboard ${vm_guest_os_keyboard}
 ### --noipv6	  disable IPv6 on this device
 ${network}
 
+### Set the system hostname
+network --hostname=${build_hostname}
+
 ### Lock the root account.
 rootpw --lock
 
@@ -75,6 +78,13 @@ dnf install -y sudo open-vm-tools perl
 %{ if additional_packages != "" ~}
 dnf install -y ${additional_packages}
 %{ endif ~}
+
+# Install Docker
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable docker
+usermod -aG docker ${build_username}
+
 echo "${build_username} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/${build_username}
 sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
 %end

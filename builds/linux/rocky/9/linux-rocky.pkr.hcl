@@ -55,6 +55,7 @@ locals {
       build_username           = var.build_username
       build_password           = var.build_password
       build_password_encrypted = var.build_password_encrypted
+      build_hostname           = var.build_hostname
       vm_guest_os_language     = var.vm_guest_os_language
       vm_guest_os_keyboard     = var.vm_guest_os_keyboard
       vm_guest_os_timezone     = var.vm_guest_os_timezone
@@ -199,25 +200,24 @@ source "vsphere-iso" "linux-rocky" {
 build {
   sources = ["source.vsphere-iso.linux-rocky"]
 
-  provisioner "ansible" {
-    user                   = var.build_username
-    galaxy_file            = "${path.cwd}/ansible/linux-requirements.yml"
-    galaxy_force_with_deps = true
-    playbook_file          = "${path.cwd}/ansible/linux-playbook.yml"
-    roles_path             = "${path.cwd}/ansible/roles"
-    ansible_env_vars = [
-      "ANSIBLE_CONFIG=${path.cwd}/ansible/ansible.cfg",
-      "ANSIBLE_PYTHON_INTERPRETER=/usr/libexec/platform-python"
-    ]
-    extra_arguments = [
-      "--extra-vars", "display_skipped_hosts=false",
-      "--extra-vars", "build_username=${var.build_username}",
-      "--extra-vars", "build_key='${var.build_key}'",
-      "--extra-vars", "ansible_username=${var.ansible_username}",
-      "--extra-vars", "ansible_key='${var.ansible_key}'",
-      "--extra-vars", "enable_cloudinit=${var.vm_guest_os_cloudinit}",
-    ]
-  }
+  # provisioner "ansible" {
+  #   user          = var.build_username
+  #   playbook_file = "${path.cwd}/ansible/linux-playbook.yml"
+  #   roles_path    = "${path.cwd}/ansible/roles"
+  #   ansible_env_vars = [
+  #     "ANSIBLE_CONFIG=${path.cwd}/ansible/ansible.cfg",
+  #     "ANSIBLE_PYTHON_INTERPRETER=/usr/libexec/platform-python"
+  #   ]
+  #   extra_arguments = [
+  #     "--extra-vars", "display_skipped_hosts=false",
+  #     "--extra-vars", "build_username=${var.build_username}",
+  #     "--extra-vars", "build_key='${var.build_key}'",
+  #     "--extra-vars", "build_hostname=${var.build_hostname}",
+  #     "--extra-vars", "ansible_username=${var.ansible_username}",
+  #     "--extra-vars", "ansible_key='${var.ansible_key}'",
+  #     "--extra-vars", "enable_cloudinit=${var.vm_guest_os_cloudinit}",
+  #   ]
+  # }
 
   post-processor "manifest" {
     output     = local.manifest_output
